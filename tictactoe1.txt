@@ -1,0 +1,138 @@
+
+import random
+from array import array
+from tabnanny import check
+
+class Tictactoe:
+    array = [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']]
+
+    def draw(self):
+        print("___________________")
+        for i in range (3):
+            print("|", end = '')
+            for j in range (3):
+                print(" ", self.array[i][j], end='  |')
+            print()
+            print("___________________")
+
+
+    def checkwinner(self):
+        #check row
+        for i in range (3):
+            if self.array[i][0] == self.array[i][1] == self.array[i][2] and self.array[i][1] != ' ':
+                return self.array[i][0]
+        #check column
+        for i in range (3):
+            if self.array[0][i] == self.array[1][i] == self.array[2][i] and self.array[0][i] != ' ':
+                return self.array[0][i]
+        #check diagonal
+        if self.array[0][0] == self.array[1][1] == self.array[2][2] and self.array[1][1] != ' ':
+            return self.array[1][1]
+        if self.array[2][0] == self.array[1][1] == self.array[0][2] and self.array[1][1] != ' ':
+            return self.array[1][1]
+        #check tie
+        for i in range (3):
+            for j in range(3):
+                if self.array[i][j] == ' ':
+                    return 'null'
+        return 'tie'
+
+    Score, depth = 0, 0
+    move = (0, 0)
+
+    def bestMove(self):
+        #AI turn
+        pointEva = -10
+        mindepth = 100
+        for i in range(3):
+            for j in range(3):
+                if self.array[i][j] == ' ':
+                    self.array[i][j] = 'x'
+                    Score, depth = self.minimax(False, 0)
+                    self.array[i][j] = ' '
+                    if (Score > pointEva) or (Score == pointEva and depth < mindepth):
+                        pointEva = Score
+                        mindepth = depth
+                        move = (i,j)
+        return move
+
+    Rule = {'tie' : 0, 'o' : -1, 'x' : 1}
+
+    def minimax(self, isMaxPlayer, depth):
+        if self.checkwinner() != 'null':
+            return self.Rule[self.checkwinner()], depth
+        if isMaxPlayer:
+            pointEva = -10
+            for i in range(3):
+                for j in range(3):
+                    if self.array[i][j] == ' ':
+                        self.array[i][j] = 'x'
+                        Score, depth = self.minimax(False, depth + 1)
+                        self.array[i][j] = ' '
+                        pointEva = max(Score, pointEva)
+            return pointEva, depth
+        else:
+            pointEva = 10
+            for i in range(3):
+                for j in range(3):
+                    if self.array[i][j] == ' ':
+                        self.array[i][j] = 'o'
+                        Score, depth = self.minimax(True, depth + 1)
+                        self.array[i][j] = ' '
+                        pointEva = min(Score, pointEva)
+            return pointEva, depth
+
+    def game(self):
+        print("# Choose your turn : ")
+        print("- FIRST : 1")
+        print("- THEN  : 2")
+        t = int(input())
+        if t == 2:
+            x = random.randint(0, 2) 
+            y = random.randint(0, 2) 
+            self.array[x][y] = 'x'
+            self.draw()
+            while self.checkwinner() == 'null':          
+                if self.checkwinner() != 'null':
+                    break
+                while True:
+                    print("Input your desired position: ")
+                    a, b = list(map(int, input().split()))
+                    if self.array[a][b] == ' ':
+                        break
+                self.array[a][b] = 'o'
+                move = self.bestMove()
+                self.array[move[0]][move[1]] = 'x' 
+                self.draw()
+        else:
+            while True:     
+                self.draw()       
+                if self.checkwinner() != 'null':
+                    break
+                while True:
+                    print("Input your desired position: ")
+                    a, b = list(map(int, input().split()))
+                    if self.array[a][b] == ' ':
+                        break
+                self.array[a][b] = 'o'
+                if self.checkwinner() != 'null':
+                    break
+                move = self.bestMove()
+                self.draw()
+                self.array[move[0]][move[1]] = 'x'
+            self.draw()  
+
+        self.Report()
+        
+    def Report(self):
+        winner = self.checkwinner()
+        print(winner, end = '')
+        if winner != 'tie':
+            print(' is the winner! \(^o^)/')
+        else:
+            print("!")
+
+                     
+Game = Tictactoe()
+Game.game()
+
