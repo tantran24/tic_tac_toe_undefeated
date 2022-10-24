@@ -9,8 +9,8 @@ from tabnanny import check
 
 class Tictactoe:
     
-    def __init__(self):
-        array = [[' ',' ',' ']
+    
+    array = [[' ',' ',' ']
                 ,[' ',' ',' ']
                 ,[' ',' ',' ']]
 
@@ -183,33 +183,78 @@ class Tictactoe:
 # 
 vec2 = pygame.math.Vector2
 class Game:
+    w, h = 960, 540
     def __init__(self):
-        pygame.init()
-        w, h = 960, 540
-        self.screen = pygame.display.set_mode((w, h))
+        pygame.init()     
+        self.screen = pygame.display.set_mode((self.w, self.h))
         self.clock = pygame.time.Clock()
         self.bg = pygame.image.load('images/back-ground.jpg')
-        self.bg = pygame.transform.scale(self.bg, (w, h))
+        self.bg = pygame.transform.scale(self.bg, (self.w, self.h))
+        self.X = pygame.image.load('images/X.png')
+        self.X = pygame.transform.scale(self.X, (self.h/4, self.h/4))
+        self.O = pygame.image.load('images/O.png')
+        self.O = pygame.transform.scale(self.O, (self.h/4, self.h/4))
         self.tic_tac_toe = Tictactoe()
+        self.board = [[' ',' ',' ']
+                     ,[' ',' ',' ']
+                     ,[' ',' ',' ']]
+        self.turn = 'x'
 
     WHITE = (255, 255, 255)
+    ORIGIN_board = vec2(48, 80)
+    CELL_SIZE = h*2/3
+
+    def draw_objects(self):
+        for i, row  in enumerate (self.board):
+            for j, obj in enumerate (row):
+                if obj != ' ':
+                    x, y = map(int,self.ORIGIN_board + vec2(i*self.w/8, j*self.w/8))
+                    print("(x,y) = ",x,y)
+                    print("(i,j) =",i,j)
+                    if self.board[i][j] == 'x':                 
+                        self.screen.blit(self.X, (x, y))
+                    elif self.board[i][j] == 'o':
+                        self.screen.blit(self.O, (x, y))
+
+                    
+    def draw(self):
+        self.screen.blit(self.bg, (0,0))
+        self.draw_objects()
+
 
     def check_events(self):
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-    
+
+    def game_core(self):
+        current_cell = (vec2(pygame.mouse.get_pos()) - self.ORIGIN_board) // (self.CELL_SIZE//3)
+        col, row = map(int, current_cell)
+        print(row, col)
+        left_click = pygame.mouse.get_pressed()[0]
+
+        if left_click and self.board[row][col] == ' ':
+            self.board[row][col] = self.turn
+            if self.turn == 'o':
+                self.turn = 'x' 
+            elif self.turn == 'x':
+                self.turn = 'o'
+
     def run(self):
         while True:
             self.check_events()
-            self.screen.blit(self.bg, (0,0))
+            self.draw()
+            self.game_core() 
+            
             left_click = pygame.mouse.get_pressed()[0]
             current_cell = vec2(pygame.mouse.get_pos())
-            print(current_cell)
+            print("QQQQ",current_cell)
 
             pygame.display.flip()
             self.clock.tick(45)
+            #print(self.board)
+
 
 A = Game()
 A.run()
