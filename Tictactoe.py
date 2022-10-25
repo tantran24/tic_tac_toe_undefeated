@@ -208,9 +208,9 @@ class Game:
         for i, row  in enumerate (self.board):
             for j, obj in enumerate (row):
                 if obj != ' ':
-                    x, y = map(int,self.ORIGIN_board + vec2(i*self.w/8, j*self.w/8))
+                    x, y = map(int,self.ORIGIN_board + vec2(j*self.w/8, i*self.w/8))
                     print("(x,y) = ",x,y)
-                    print("(i,j) =",i,j)
+                    #print("(i,j) =",i,j)
                     if self.board[i][j] == 'x':                 
                         self.screen.blit(self.X, (x, y))
                     elif self.board[i][j] == 'o':
