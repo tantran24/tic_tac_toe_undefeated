@@ -103,9 +103,8 @@ class Game:
         self.LOSE = pygame.transform.scale(self.LOSE, (self.w/1.7, self.h/1.7))
         self.TIE = pygame.image.load('images/TIE.jpg')
         self.TIE = pygame.transform.scale(self.TIE, (self.w/1.7, self.h/1.7))
-        self.tic_tac_toe = Tictactoe()
- 
-        self.turn = 'x'
+        self.tic_tac_toe = Tictactoe() 
+        self.turn = ' '
 
     WHITE = (255, 255, 255)
     ORIGIN_board = vec2(w/16.7, h/5.5)
@@ -155,15 +154,17 @@ class Game:
                 self.tic_tac_toe.current = a, b
                 if self.tic_tac_toe.checkwinner() != 'null':
                     self.stop = self.tic_tac_toe.checkwinner()
-
+    game_mode = 2
     option = 0
     def run(self):
         alpha = 0
         self.check = 0
-        a, b = randint(0,2), randint(0,2)
-        print(a,b)
-        self.tic_tac_toe.array[a][b] = 'x'
+        if self.game_mode == 2:
+            a, b = randint(0,2), randint(0,2)
+            self.tic_tac_toe.array[a][b] = 'x'
+            self.tic_tac_toe.numMoves = self.tic_tac_toe.numMoves + 1 
         self.turn = 'o'
+        print(self.stop)
         while True:
             self.check_events()
             self.draw()
