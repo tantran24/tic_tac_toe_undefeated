@@ -1,62 +1,31 @@
-
-import random
+from random import randint
 import pygame, sys
 from array import array
 from tabnanny import check
 
-
-
-
 class Tictactoe:
-    
-    
-    array = [[' ',' ',' ']
+    def __init__(self):   
+        self.array = [[' ',' ',' ']
                 ,[' ',' ',' ']
                 ,[' ',' ',' ']]
 
-
-    def draw(self):
-        print("___________________")
-        for i in range (3):
-            print("|", end = '')
-            for j in range (3):
-                print(" ", self.array[i][j], end='  |')
-            print()
-            print("___________________")
-
-
     def checkwinner(self):
-        if self.__numMoves < 5:
+        if self.numMoves < 5:
             return 'null'
         a, b = self.current
-        # print("CHECK ",a, b)
         #check column
         if self.array[0][b] == self.array[1][b] == self.array[2][b]:
             return self.array[a][b]
         #check row
         if self.array[a][0] == self.array[a][1] == self.array[a][2]:
             return self.array[a][b]
- 
-        # #check row
-        # for i in range (3):
-        #     if self.array[i][0] == self.array[i][1] == self.array[i][2] and self.array[i][1] != ' ':
-        #         return self.array[i][0]
-        # #check column
-        # for i in range (3):
-        #     if self.array[0][i] == self.array[1][i] == self.array[2][i] and self.array[0][i] != ' ':
-        #         return self.array[0][i]
         #check diagonal
         if self.array[0][0] == self.array[1][1] == self.array[2][2] and self.array[1][1] != ' ':
             return self.array[1][1]
         if self.array[2][0] == self.array[1][1] == self.array[0][2] and self.array[1][1] != ' ':
             return self.array[1][1]
         #check tie
-        # for i in range (3):
-        #     for j in range(3):
-        #         if self.array[i][j] == ' ':
-        #             return 'null'
-        # return 'tie' 
-        if self.__numMoves == 9:
+        if self.numMoves == 9:
             return 'tie'
         return 'null'
 
@@ -71,11 +40,11 @@ class Tictactoe:
             for j in range(3):
                 if self.array[i][j] == ' ':
                     self.array[i][j] = 'x'
-                    self.__numMoves = self.__numMoves + 1
+                    self.numMoves = self.numMoves + 1
                     self.current = i, j
                     Score, depth = self.minimax(False, 0)
                     self.array[i][j] = ' '
-                    self.__numMoves = self.__numMoves - 1
+                    self.numMoves = self.numMoves - 1
                     if (Score > pointEva) or (Score == pointEva and depth < mindepth):
                         pointEva = Score
                         mindepth = depth
@@ -84,7 +53,7 @@ class Tictactoe:
 
     Rule = {'tie' : 0, 'o' : -1, 'x' : 1}
     current = 0, 0
-    __numMoves = 0
+    numMoves = 0
 
     def minimax(self, isMaxPlayer, depth):
         if self.checkwinner() != 'null':
@@ -95,11 +64,11 @@ class Tictactoe:
                 for j in range(3):
                     if self.array[i][j] == ' ':
                         self.array[i][j] = 'x'
-                        self.__numMoves = self.__numMoves + 1
+                        self.numMoves = self.numMoves + 1
                         self.current = i, j
                         Score, depth = self.minimax(False, depth + 1)
                         self.array[i][j] = ' '
-                        self.__numMoves = self.__numMoves - 1
+                        self.numMoves = self.numMoves - 1
                         pointEva = max(Score, pointEva)
             return pointEva, depth
         else:
@@ -108,79 +77,15 @@ class Tictactoe:
                 for j in range(3):
                     if self.array[i][j] == ' ':
                         self.array[i][j] = 'o'
-                        self.__numMoves = self.__numMoves + 1
+                        self.numMoves = self.numMoves + 1
                         self.current = i, j
                         Score, depth = self.minimax(True, depth + 1)
                         self.array[i][j] = ' '
-                        self.__numMoves = self.__numMoves - 1
+                        self.numMoves = self.numMoves - 1
                         pointEva = min(Score, pointEva)
             return pointEva, depth
-
-
-    def game(self):
-        print("# Choose your turn : ")
-        print("- FIRST : 1")
-        print("- THEN  : 2")
-        t = int(input())
-        if t == 2:
-            x = 1
-            y = 1
-            self.array[x][y] = 'x'
-            self.__numMoves = self.__numMoves + 1
-            self.current = x, y
-            self.draw()
-            while self.checkwinner() == 'null':          
-                while True:
-                    print("Input your desired position: ")
-                    a, b = list(map(int, input().split()))
-                    if self.array[a][b] == ' ':
-                        break
-                self.array[a][b] = 'o'
-                self.__numMoves = self.__numMoves + 1
-                self.current = a, b
-                if self.checkwinner() != 'null':
-                    break
-                move = self.bestMove()
-                self.array[move[0]][move[1]] = 'x' 
-                self.__numMoves = self.__numMoves + 1
-                self.current = move
-                self.draw()
-                print(self.current, self.__numMoves)
-        else:
-            while True:     
-                self.draw()       
-                while True:
-                    print("Input your desired position: ")
-                    a, b = list(map(int, input().split()))
-                    if self.array[a][b] == ' ':
-                        break
-                self.array[a][b] = 'o'
-                self.__numMoves = self.__numMoves + 1
-                self.current = a, b
-                if self.checkwinner() != 'null':
-                    break
-                move = self.bestMove()
-                self.draw()
-                self.array[move[0]][move[1]] = 'x'
-                self.__numMoves = self.__numMoves + 1
-                self.current = move
-                if self.checkwinner() != 'null':
-                    break
-            self.draw()  
-        self.Report()
-        
-    def Report(self):
-        winner = self.checkwinner()
-        print(winner, end = '')
-        if winner != 'tie':
-            print(' is the winner! \(^o^)/')
-        else:
-            print("!")
-
     
-# Game = Tictactoe()
-# Game.game()        
-# 
+
 vec2 = pygame.math.Vector2
 class Game:
     w, h = 960, 540
@@ -191,29 +96,29 @@ class Game:
         self.bg = pygame.image.load('images/back-ground.jpg')
         self.bg = pygame.transform.scale(self.bg, (self.w, self.h))
         self.X = pygame.image.load('images/X.png')
-        self.X = pygame.transform.scale(self.X, (self.h/4, self.h/4))
+        self.X = pygame.transform.scale(self.X, (self.h/5, self.h/5))
         self.O = pygame.image.load('images/O.png')
-        self.O = pygame.transform.scale(self.O, (self.h/4, self.h/4))
+        self.O = pygame.transform.scale(self.O, (self.h/5, self.h/5))
+        self.LOSE = pygame.image.load('images/LOSE.jpg')
+        self.LOSE = pygame.transform.scale(self.LOSE, (self.w/1.7, self.h/1.7))
+        self.TIE = pygame.image.load('images/TIE.jpg')
+        self.TIE = pygame.transform.scale(self.TIE, (self.w/1.7, self.h/1.7))
         self.tic_tac_toe = Tictactoe()
-        self.board = [[' ',' ',' ']
-                     ,[' ',' ',' ']
-                     ,[' ',' ',' ']]
+ 
         self.turn = 'x'
 
     WHITE = (255, 255, 255)
-    ORIGIN_board = vec2(48, 80)
+    ORIGIN_board = vec2(w/16.7, h/5.5)
     CELL_SIZE = h*2/3
 
     def draw_objects(self):
-        for i, row  in enumerate (self.board):
+        for i, row  in enumerate (self.tic_tac_toe.array):
             for j, obj in enumerate (row):
                 if obj != ' ':
                     x, y = map(int,self.ORIGIN_board + vec2(j*self.w/8, i*self.w/8))
-                    print("(x,y) = ",x,y)
-                    #print("(i,j) =",i,j)
-                    if self.board[i][j] == 'x':                 
+                    if self.tic_tac_toe.array[i][j] == 'x':                 
                         self.screen.blit(self.X, (x, y))
-                    elif self.board[i][j] == 'o':
+                    elif self.tic_tac_toe.array[i][j] == 'o':
                         self.screen.blit(self.O, (x, y))
 
                     
@@ -227,36 +132,68 @@ class Game:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
+    stop = ' '
     def game_core(self):
         current_cell = (vec2(pygame.mouse.get_pos()) - self.ORIGIN_board) // (self.CELL_SIZE//3)
         col, row = map(int, current_cell)
-        print(row, col)
         left_click = pygame.mouse.get_pressed()[0]
-
-        if left_click and self.board[row][col] == ' ':
-            self.board[row][col] = self.turn
-            if self.turn == 'o':
+        
+        if col >= 0 and col <=2 and row >= 0 and row <=2:
+            if left_click and self.tic_tac_toe.array[row][col] == ' ' and self.turn == 'o':
+                self.tic_tac_toe.array[row][col] = 'o'      
                 self.turn = 'x' 
-            elif self.turn == 'x':
+                self.tic_tac_toe.numMoves = self.tic_tac_toe.numMoves + 1
+                self.tic_tac_toe.current = row, col
+                if self.tic_tac_toe.checkwinner() != 'null':
+                    self.stop = self.tic_tac_toe.checkwinner()
+            
+            if self.turn  == 'x':
+                a, b = self.tic_tac_toe.bestMove()
+                self.tic_tac_toe.array[a][b] = 'x'
                 self.turn = 'o'
+                self.tic_tac_toe.numMoves = self.tic_tac_toe.numMoves + 1
+                self.tic_tac_toe.current = a, b
+                if self.tic_tac_toe.checkwinner() != 'null':
+                    self.stop = self.tic_tac_toe.checkwinner()
 
+    option = 0
     def run(self):
+        alpha = 0
+        self.check = 0
+        a, b = randint(0,2), randint(0,2)
+        print(a,b)
+        self.tic_tac_toe.array[a][b] = 'x'
+        self.turn = 'o'
         while True:
             self.check_events()
             self.draw()
-            self.game_core() 
-            
-            left_click = pygame.mouse.get_pressed()[0]
-            current_cell = vec2(pygame.mouse.get_pos())
-            print("QQQQ",current_cell)
+            x, y = pygame.mouse.get_pos()
+            left_click = pygame.mouse.get_pressed()[0]            
+            if self.stop == ' ':
+                self.game_core() 
+            else:
+                self.bg.fill((200, 200, 200, alpha), None, pygame.BLEND_RGBA_MULT)
+                if self.stop == 'tie':
+                    self.screen.blit(self.TIE, (self.w/2.2, self.h/5))
+                elif self.stop == 'x':               
+                    self.screen.blit(self.LOSE, (self.w/2.2, self.h/5))                   
+                if left_click and (x >= 560 and x <= 630) and (y >= 320 and y <=380):
+                    self.option = 1
+                elif left_click and (x >= 800 and x <= 870) and (y >= 320 and y <=380):
+                    self.option = 2
+                if self.option == 1:
+                    self.playNewGame()
+                elif self.option == 2:
+                    return
 
             pygame.display.flip()
-            self.clock.tick(45)
-            #print(self.board)
+            self.clock.tick(60)
 
-
-A = Game()
-A.run()
+    def playNewGame(self):
+        self = Game()
+        self.run()
+        
+B = Game()
+B.run()
 
 pygame.quit()
